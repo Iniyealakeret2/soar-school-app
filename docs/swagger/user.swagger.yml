@@ -1,0 +1,125 @@
+paths:
+  /api/user/signup:
+    post:
+      summary: Register a new user (Requires Admin Key)
+      tags: [User]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, role, adminKey]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [superadmin, school_admin]
+                schoolId:
+                  type: string
+                adminKey:
+                  type: string
+      responses:
+        200:
+          description: User created successfully
+        400:
+          description: Unauthorized or Validation error
+
+  /api/user/createAdmin:
+    post:
+      summary: Create a new admin (Superadmin only)
+      tags: [User]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, role]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [superadmin, school_admin]
+                schoolId:
+                  type: string
+      responses:
+        200:
+          description: Admin created successfully
+        403:
+          description: Forbidden
+
+  /api/user/login:
+    post:
+      summary: Authenticate a user
+      tags: [User]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Login successful
+        401:
+          description: Invalid credentials
+
+  /api/user/getSchoolAdmins:
+    get:
+      summary: List all school admins (Superadmin only)
+      tags: [User]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        200:
+          description: List of school admins with pagination metadata
+        403:
+          description: Forbidden
+
+  /api/user/deleteAdmin:
+    delete:
+      summary: Delete an admin and reassign their school (Superadmin only)
+      tags: [User]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Admin deleted successfully
+        403:
+          description: Forbidden

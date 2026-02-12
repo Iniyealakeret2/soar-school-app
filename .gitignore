@@ -77,18 +77,15 @@ dist
 # Serverless directories
 .serverless
 
+# Docker
+docker-compose.yml
+
 # IDE / Editor
 .idea
-
-# Service worker
-sw.*
+.vscode/
 
 # macOS
 .DS_Store
 
 # Vim swap files
 *.swp
-
-# vscode
-.vscode/
-
