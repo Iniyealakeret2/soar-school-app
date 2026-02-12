@@ -1,0 +1,180 @@
+paths:
+  /api/classroom/createClassroom:
+    post:
+      summary: Create a new classroom
+      tags: [Classroom]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the school where the classroom will be created
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, capacity]
+              properties:
+                name:
+                  type: string
+                capacity:
+                  type: integer
+                resources:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      quantity:
+                        type: integer
+                      status:
+                        type: string
+                        enum: [active, broken, missing]
+      responses:
+        200:
+          description: Classroom created successfully
+        403:
+          description: Forbidden
+
+  /api/classroom/getClassroomsBySchool:
+    get:
+      summary: List all classrooms in a school
+      tags: [Classroom]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        200:
+          description: List of classrooms with pagination metadata
+        403:
+          description: Forbidden
+
+  /api/classroom/getClassrooms:
+    get:
+      summary: View all classrooms under a school_admin (Superadmin uses schoolAdminId, School Admin uses their own)
+      tags: [Classroom]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+          description: Required only for Superadmins to view a specific admin's school classrooms (this is the admin's user ID)
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        200:
+          description: List of classrooms with pagination metadata
+        403:
+          description: Forbidden
+
+  /api/classroom/getClassroom:
+    get:
+      summary: Get details of a classroom
+      tags: [Classroom]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Classroom details
+        404:
+          description: Classroom not found
+
+  /api/classroom/updateClassroom:
+    patch:
+      summary: Update a classroom
+      tags: [Classroom]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the classroom to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                capacity:
+                  type: integer
+                resources:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        description: Optional for new resources, required for updating/deleting existing ones
+                      name:
+                        type: string
+                      quantity:
+                        type: integer
+                      status:
+                        type: string
+                        enum: [active, broken, missing]
+      responses:
+        200:
+          description: Classroom updated successfully
+        403:
+          description: Forbidden
+
+  /api/classroom/deleteClassroom:
+    delete:
+      summary: Delete a classroom
+      tags: [Classroom]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Classroom deleted successfully
+        403:
+          description: Forbidden

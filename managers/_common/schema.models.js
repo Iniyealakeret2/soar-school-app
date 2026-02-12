@@ -99,4 +99,7 @@ module.exports = {
     bool: {
         type: 'Boolean',
     },
+    array: {
+        type: 'Array',
+    }
 }

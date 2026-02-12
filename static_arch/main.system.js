@@ -38,6 +38,11 @@ const layers = {
         _default: { anyoneCan: 'none' },
         _superadmin: { anyoneCan: 'config' },
         _school_admin: { anyoneCan: 'read' },
+    },
+    classroom: {
+        _default: { anyoneCan: 'none' },
+        _superadmin: { anyoneCan: 'config' },
+        _school_admin: { anyoneCan: 'audit' },
     }
 }
 

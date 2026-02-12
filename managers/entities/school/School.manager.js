@@ -59,6 +59,8 @@ module.exports = class School {
      * List schools (Superadmin: all, SchoolAdmin: only connected school)
      */
     async getSchools({ __token, page = 1, limit = 10 }) {
+        page = parseInt(page);
+        limit = parseInt(limit);
         const isSuperAdmin = await this.shark.isGranted({
             layer: 'school',
             variant: 'superadmin',
