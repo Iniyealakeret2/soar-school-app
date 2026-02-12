@@ -26,6 +26,9 @@ module.exports = class UserServer {
 
         /** an error handler */
         app.use((err, req, res, next) => {
+            if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+                return res.status(400).send({ ok: false, message: 'Malformed JSON: Please check your double quotes and syntax.' });
+            }
             console.error(err.stack)
             res.status(500).send('Something broke!')
         });

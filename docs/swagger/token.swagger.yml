@@ -1,0 +1,19 @@
+paths:
+  /api/token/v1_createShortToken:
+    post:
+      summary: Exchange a Long Token for a Short Token (Session)
+      tags: [Token]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Short token generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  shortToken:
+                    type: string
+        401:
+          description: Unauthorized - Invalid long token

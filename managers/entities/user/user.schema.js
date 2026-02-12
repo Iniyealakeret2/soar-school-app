@@ -32,6 +32,31 @@ module.exports = {
         {
             model: 'longText',
             path: 'adminKey',
+            required: true,
+        }
+    ],
+    createAdmin: [
+        {
+            model: 'longText',
+            path: 'name',
+            required: true,
+        },
+        {
+            model: 'email',
+            required: true,
+        },
+        {
+            model: 'password',
+            required: true,
+        },
+        {
+            model: 'text',
+            path: 'role',
+            required: true,
+        },
+        {
+            model: 'longText',
+            path: 'schoolId',
             required: false,
         }
     ],
@@ -45,14 +70,10 @@ module.exports = {
             required: true,
         }
     ],
-    verifyOtp: [
+    deleteAdmin: [
         {
-            model: 'email',
-            required: true,
-        },
-        {
-            model: 'text',
-            path: 'code',
+            model: 'id',
+            path: 'id',
             required: true,
         }
     ]

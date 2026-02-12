@@ -33,6 +33,11 @@ const layers = {
                 _default: {inherit: true},
             }
         }
+    },
+    school: {
+        _default: { anyoneCan: 'none' },
+        _superadmin: { anyoneCan: 'config' },
+        _school_admin: { anyoneCan: 'read' },
     }
 }
 

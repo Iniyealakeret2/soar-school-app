@@ -1,0 +1,121 @@
+paths:
+  /api/school/createSchool:
+    post:
+      summary: Create a new school (Superadmin only)
+      tags: [School]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, address, schoolOwner]
+              properties:
+                name:
+                  type: string
+                address:
+                  type: string
+                schoolOwner:
+                  type: string
+                phoneNumber:
+                  type: string
+                email:
+                  type: string
+      responses:
+        200:
+          description: School created successfully
+        403:
+          description: Forbidden
+
+  /api/school/getSchools:
+    get:
+      summary: "List schools (Superadmin: all, SchoolAdmin: only their own)"
+      tags: [School]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        200:
+          description: List of schools found with pagination metadata
+        403:
+          description: Forbidden
+
+  /api/school/getSchool:
+    get:
+      summary: Get details of a specific school
+      tags: [School]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: School details
+        404:
+          description: School not found
+
+  /api/school/updateSchool:
+    patch:
+      summary: Update a school (Superadmin only)
+      tags: [School]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id]
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                address:
+                  type: string
+                schoolOwner:
+                  type: string
+                phoneNumber:
+                  type: string
+                email:
+                  type: string
+      responses:
+        200:
+          description: School updated successfully
+        403:
+          description: Forbidden
+
+  /api/school/deleteSchool:
+    delete:
+      summary: Delete a school (Superadmin only)
+      tags: [School]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: School deleted successfully
+        403:
+          description: Forbidden
