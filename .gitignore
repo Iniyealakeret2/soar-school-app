@@ -77,10 +77,6 @@ dist
 # Serverless directories
 .serverless
 
-# Custom Project Files
-IMPLEMENTATION_GUIDE.md
-TECHNICAL_CHALLENGE_STEPS.md
-
 # Docker
 docker-compose.yml
 
