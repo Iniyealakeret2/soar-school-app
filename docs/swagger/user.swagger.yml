@@ -1,0 +1,72 @@
+paths:
+  /api/user/signup:
+    post:
+      summary: Register a new user
+      tags: [User]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [superadmin, school_admin]
+                schoolId:
+                  type: string
+                adminKey:
+                  type: string
+      responses:
+        200:
+          description: User created successfully
+        400:
+          description: Validation error or user already exists
+
+  /api/user/login:
+    post:
+      summary: Authenticate a user
+      tags: [User]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Login successful
+        400:
+          description: Invalid credentials
+
+  /api/user/verifyOtp:
+    post:
+      summary: Verify account via OTP
+      tags: [User]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                code:
+                  type: string
+      responses:
+        200:
+          description: Account verified successfully
+        400:
+          description: Invalid or expired OTP

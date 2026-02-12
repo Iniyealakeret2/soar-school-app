@@ -1,6 +1,7 @@
 const jwt        = require('jsonwebtoken');
 const { nanoid } = require('nanoid');
 const md5        = require('md5');
+const bcrypt     = require('bcrypt');
 
 
 module.exports = class TokenManager {
@@ -75,5 +76,19 @@ module.exports = class TokenManager {
         });
 
         return { shortToken };
+    }
+
+    async hashPassword(password) {
+        return await bcrypt.hash(password, 10);
+    }
+
+    async comparePassword(password, hash) {
+        return await bcrypt.compare(password, hash);
+    }
+
+    generateOtp(minutes = 10) {
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date(Date.now() + minutes * 60 * 1000);
+        return { code, expiresAt };
     }
 }
