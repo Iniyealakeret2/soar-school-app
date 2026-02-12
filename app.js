@@ -6,6 +6,10 @@ const mongoDB = config.dotEnv.MONGO_URI? require('./connect/mongo')({
     uri: config.dotEnv.MONGO_URI
 }):null;
 
+console.log("🚀 MongoDB Connection Initiated");
+
+
+
 const cache = require('./cache/cache.dbh')({
     prefix: config.dotEnv.CACHE_PREFIX ,
     url: config.dotEnv.CACHE_REDIS

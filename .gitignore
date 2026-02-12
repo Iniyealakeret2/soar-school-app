@@ -77,18 +77,19 @@ dist
 # Serverless directories
 .serverless
 
+# Custom Project Files
+IMPLEMENTATION_GUIDE.md
+TECHNICAL_CHALLENGE_STEPS.md
+
+# Docker
+docker-compose.yml
+
 # IDE / Editor
 .idea
-
-# Service worker
-sw.*
+.vscode/
 
 # macOS
 .DS_Store
 
 # Vim swap files
 *.swp
-
-# vscode
-.vscode/
-
