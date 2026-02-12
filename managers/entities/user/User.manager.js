@@ -18,6 +18,8 @@ module.exports = class User {
      * Lists all school admins (Superadmin only).
      */
     async getSchoolAdmins({ __token, page = 1, limit = 10 }) {
+        page = parseInt(page);
+        limit = parseInt(limit);
         if (__token.role !== 'superadmin') {
             return { error: 'Forbidden: Only superadmins can list school admins' };
         }
@@ -180,7 +182,8 @@ module.exports = class User {
         const longToken = this.tokenManager.genLongToken({ 
             userId: user._id, 
             userKey: user.email,
-            role: user.role 
+            role: user.role,
+            schoolId: user.schoolId
         });
         
         return {
