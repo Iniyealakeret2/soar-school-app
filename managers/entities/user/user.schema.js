@@ -79,14 +79,16 @@ module.exports = {
     ],
     changePassword: [
         {
-            model: 'password',
+            model: 'longText',
             path: 'oldPassword',
             required: true,
+            length: { min: 8, max: 100 }
         },
         {
-            model: 'password',
+            model: 'longText',
             path: 'newPassword',
             required: true,
+            length: { min: 8, max: 100 }
         }
     ]
 }

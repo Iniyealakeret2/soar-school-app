@@ -33,7 +33,7 @@ paths:
                         type: string
                       quantity:
                         type: integer
-                      status:
+                      condition:
                         type: string
                         enum: [active, broken, missing]
       responses:
@@ -152,7 +152,7 @@ paths:
                         type: string
                       quantity:
                         type: integer
-                      status:
+                      condition:
                         type: string
                         enum: [active, broken, missing]
       responses:

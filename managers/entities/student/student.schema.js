@@ -11,11 +11,6 @@ module.exports = {
             required: false,
         },
         {
-            model: 'text',
-            path: 'studentId',
-            required: true,
-        },
-        {
             model: 'date',
             path: 'dateOfBirth',
             required: true,

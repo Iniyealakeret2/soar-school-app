@@ -12,10 +12,6 @@ const personnelSchema = new mongoose.Schema({
         ref: 'School',
         required: true
     },
-    employeeId: {
-        type: String,
-        required: [true, 'Employee ID is required'],
-    },
     department: {
         type: String,
         trim: true
@@ -36,8 +32,5 @@ const personnelSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
-
-// Unique Employee ID per school
-personnelSchema.index({ schoolId: 1, employeeId: 1 }, { unique: true });
 
 module.exports = mongoose.model('Personnel', personnelSchema);

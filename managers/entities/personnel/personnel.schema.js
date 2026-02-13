@@ -22,11 +22,6 @@ module.exports = {
         },
         {
             model: 'text',
-            path: 'employeeId',
-            required: true,
-        },
-        {
-            model: 'text',
             path: 'department',
             required: false,
         },

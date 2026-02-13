@@ -11,15 +11,12 @@ paths:
           application/json:
             schema:
               type: object
-              required: [name, studentId, dateOfBirth, gender, parentContact]
+              required: [name, dateOfBirth, gender, parentContact]
               properties:
                 name:
                   type: string
                 email:
                   type: string
-                studentId:
-                  type: string
-                  description: Unique ID for the student within the school
                 dateOfBirth:
                   type: string
                   format: date

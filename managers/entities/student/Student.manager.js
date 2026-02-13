@@ -11,7 +11,7 @@ module.exports = class Student {
         this.shark               = managers.shark;
         this.httpExposed         = [
             'createStudent',
-            'getStudent',
+            'get=getStudent',
             'get=getStudents',
             'patch=updateStudent',
             'delete=deleteStudent',
@@ -22,16 +22,11 @@ module.exports = class Student {
     /**
      * Enroll a new student.
      */
-    async createStudent({ __token, __isSchoolAdmin, name, email, studentId, dateOfBirth, gender, address, parentContact, classroomId }) {
-
+    async createStudent({ __token, __isSchoolAdmin, name, email, dateOfBirth, gender, address, parentContact, classroomId }) {
         const validationResult = await this.validators.student.createStudent({ 
-            name, email, studentId, dateOfBirth, gender, address, parentContact, classroomId 
+            name, email, dateOfBirth, gender, address, parentContact, classroomId 
         });
         if (validationResult) return { errors: validationResult };
-
-        // Check if studentId already exists
-        const existingStudent = await StudentModel.findOne({ studentId });
-        if (existingStudent) return { code: 409, error: 'Student ID already exists' };
 
         // If classroomId is provided, verify it belongs to the same school
         if (classroomId) {
@@ -44,7 +39,6 @@ module.exports = class Student {
         const newStudent = await StudentModel.create({
             name,
             email,
-            studentId,
             schoolId: __token.schoolId,
             classroomId,
             dateOfBirth,

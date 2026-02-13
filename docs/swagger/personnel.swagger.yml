@@ -11,7 +11,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [name, email, password, role, employeeId]
+              required: [name, email, password, role]
               properties:
                 name:
                   type: string
@@ -22,8 +22,6 @@ paths:
                 role:
                   type: string
                   enum: [teacher, staff]
-                employeeId:
-                  type: string
                 department:
                   type: string
                 designation:

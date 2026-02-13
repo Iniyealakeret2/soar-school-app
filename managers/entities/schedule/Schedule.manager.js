@@ -112,6 +112,20 @@ module.exports = class Schedule {
         const validationResult = await this.validators.schedule.updateSchedule({ id, ...updateData });
         if (validationResult) return { errors: validationResult };
 
+        const { classroomId, dayOfWeek, startTime, endTime } = { ...schedule.toObject(), ...updateData };
+
+        // Potential Overlap Check
+        const overlap = await ScheduleModel.findOne({
+            _id: { $ne: id },
+            classroomId,
+            dayOfWeek,
+            $or: [
+                { startTime: { $lte: startTime }, endTime: { $gt: startTime } },
+                { startTime: { $lt: endTime }, endTime: { $gte: endTime } }
+            ]
+        });
+        if (overlap) return { code: 409, error: 'Schedule overlaps with an existing entry in this classroom' };
+
         const { fnName, moduleName, __token: _t, __device: _d, ...cleanUpdateData } = updateData;
 
         const updatedSchedule = await ScheduleModel.findByIdAndUpdate(id, cleanUpdateData, { new: true })

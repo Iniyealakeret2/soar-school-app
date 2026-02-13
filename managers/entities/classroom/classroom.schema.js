@@ -70,5 +70,17 @@ module.exports = {
             path: 'id',
             required: false,
         }
+    ],
+    addResources: [
+        {
+            model: 'id',
+            path: 'id',
+            required: true,
+        },
+        {
+            model: 'array',
+            path: 'resources',
+            required: true,
+        }
     ]
 }
