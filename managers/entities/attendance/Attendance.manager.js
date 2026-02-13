@@ -1,6 +1,7 @@
 const AttendanceModel = require('../../../models/Attendance');
 const StudentModel = require('../../../models/Student');
 const ClassroomModel = require('../../../models/Classroom');
+const ScheduleModel = require('../../../models/Schedule');
 
 module.exports = class Attendance { 
 
@@ -19,6 +20,11 @@ module.exports = class Attendance {
      * Mark attendance for a student (Typically called by a teacher).
      */
     async markAttendance({ __token, __isTeacher, studentId, classroomId, date, status, remarks }) {
+        // Only the 'teacher' role is allowed to mark attendance
+        if (__token.role !== 'teacher') {
+            return { code: 403, error: 'Forbidden: Only teachers can mark attendance' };
+        }
+
         // Validation
         const validationResult = await this.validators.attendance.markAttendance({ 
             studentId, classroomId, date, status, remarks 
@@ -37,6 +43,15 @@ module.exports = class Attendance {
         const classroom = await ClassroomModel.findById(classroomId);
         if (!classroom || String(classroom.schoolId) !== String(__token.schoolId)) {
             return { code: 400, error: 'Invalid classroom for your school' };
+        }
+
+        // Verify the teacher is assigned to this classroom
+        const schedule = await ScheduleModel.findOne({ 
+            teacherId: __token.userId, 
+            classroomId: classroomId 
+        });
+        if (!schedule) {
+            return { code: 403, error: 'Forbidden: You are not assigned to this classroom' };
         }
 
         // Normalize date to start of day (midnight)

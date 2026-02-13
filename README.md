@@ -125,6 +125,10 @@ The application follows a hierarchical data flow:
   - Marking attendance for the same day multiple times performs an **Upsert** (updates the existing record).
 - **Schedule Overlap**: The system returns a 409 Conflict if a new schedule overlaps with another in the same classroom at the same time.
 - **Personnel Roles**: Strictly limited to `teacher` and `staff` in the Personnel module. Administrative roles are managed as Users.
+- **Attendance Permissions**: 
+  - To ensure data integrity, **only users with the 'teacher' role** can mark attendance.
+  - A teacher can only mark attendance for classrooms they are explicitly assigned to via the **Schedule**. 
+  - School Admins and Superadmins are restricted from marking attendance to maintain clear accountability.
 
 ## 🧪 Testing
 
