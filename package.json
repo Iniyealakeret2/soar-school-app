@@ -2,8 +2,9 @@
   "name": "axion",
   "version": "0.1.0",
   "description": "Boilerplate",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
+    "start": "node app.js",
     "dev": "nodemon app.js",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
