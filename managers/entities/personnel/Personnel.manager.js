@@ -12,7 +12,7 @@ module.exports = class Personnel {
         this.tokenManager        = managers.token;
         this.httpExposed         = [
             'createPersonnel',
-            'getPersonnel',
+            'get=getPersonnel',
             'get=getPersonnelList',
             'patch=updatePersonnel',
             'delete=deletePersonnel'

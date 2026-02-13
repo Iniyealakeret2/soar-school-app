@@ -104,7 +104,7 @@ module.exports = class User {
             email,
             password: hashedPassword,
             role,
-            schoolId: role === 'school_admin' ? schoolId : undefined,
+            schoolId: ['school_admin', 'teacher'].includes(role) ? schoolId : undefined,
             isVerified: true // Auto-verified via adminKey
         });
 

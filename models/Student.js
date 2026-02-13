@@ -13,11 +13,6 @@ const studentSchema = new mongoose.Schema({
         trim: true,
         lowercase: true
     },
-    studentId: {
-        type: String,
-        required: [true, 'Unique Student ID is required'],
-        unique: true
-    },
     schoolId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'School',
@@ -60,7 +55,5 @@ const studentSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Index for performance and uniqueness within school
-studentSchema.index({ schoolId: 1, studentId: 1 }, { unique: true });
 
 module.exports = mongoose.model('Student', studentSchema);
