@@ -9,6 +9,7 @@ const ADMIN_PORT                       = process.env.ADMIN_PORT || 5222;
 const ADMIN_URL                        = process.env.ADMIN_URL || `http://localhost:${ADMIN_PORT}`;
 const ENV                              = process.env.ENV || "development";
 const REDIS_URI                        = process.env.REDIS_URI || "redis://127.0.0.1:6379";
+const BASE_URL                         = process.env.RENDER_EXTERNAL_URL || process.env.BASE_URL || `http://localhost:${USER_PORT}`;
 
 const CORTEX_REDIS                     = process.env.CORTEX_REDIS || REDIS_URI;
 const CORTEX_PREFIX                    = process.env.CORTEX_PREFIX || 'none';
@@ -42,6 +43,7 @@ config.dotEnv = {
     CACHE_PREFIX,
     MONGO_URI,
     USER_PORT,
+    BASE_URL,
     ADMIN_PORT,
     ADMIN_URL,
     LONG_TOKEN_SECRET,
