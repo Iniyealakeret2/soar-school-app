@@ -132,7 +132,7 @@ The codebase includes a comprehensive integration test suite.
 
 **Run all tests**:
 ```bash
-npm test
+npm run test
 ```
 
 **Run specific module tests**:
