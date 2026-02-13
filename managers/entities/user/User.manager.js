@@ -165,9 +165,9 @@ module.exports = class User {
     }
 
     /**
-     * Authenticates a user and issues a long-lived JWT token.
+     * Authenticates a user and issues both long-lived and short-lived tokens.
      */
-    async login({ email, password }) {
+    async login({ email, password, __device }) {
         const validationResult = await this.validators.user.login({ email, password });
         if (validationResult) return { error: validationResult };
 
@@ -177,13 +177,23 @@ module.exports = class User {
         const isMatch = await this.tokenManager.comparePassword(password, user.password);
         if (!isMatch) return { error: 'Invalid credentials' };
 
-
-        // Generate tokens
+        // Generate long token
         const longToken = this.tokenManager.genLongToken({ 
             userId: user._id, 
             userKey: user.email,
             role: user.role,
             schoolId: user.schoolId
+        });
+
+        // Immediately generate short token for the current session/device
+        const { accessToken } = this.tokenManager.v1_createShortToken({ 
+            __longToken: {
+                userId: user._id,
+                userKey: user.email,
+                role: user.role,
+                schoolId: user.schoolId
+            },
+            __device: __device || 'unknown_device'
         });
         
         return {
@@ -194,7 +204,8 @@ module.exports = class User {
                 role: user.role,
                 schoolId: user.schoolId
             },
-            longToken
+            RefreshToken: longToken,
+            AccessToken: accessToken
         };
     }
 

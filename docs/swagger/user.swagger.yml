@@ -80,6 +80,45 @@ paths:
       responses:
         200:
           description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          email:
+                            type: string
+                          role:
+                            type: string
+                          schoolId:
+                            type: string
+                      RefreshToken:
+                        type: string
+                        description: Persistent identity token (Refresh Token style)
+                      AccessToken:
+                        type: object
+                        properties:
+                          token:
+                            type: string
+                            description: Session access token for current device
+                          expireAt:
+                            type: number
+                            description: Expiry time in milliseconds
+                          createdAt:
+                            type: string
+                            format: date-time
+                            description: Token creation time
         401:
           description: Invalid credentials
 
