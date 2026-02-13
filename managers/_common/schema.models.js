@@ -101,5 +101,8 @@ module.exports = {
     },
     array: {
         type: 'Array',
+    },
+    date: {
+        type: 'Date',
     }
 }

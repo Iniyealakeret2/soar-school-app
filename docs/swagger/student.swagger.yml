@@ -1,0 +1,182 @@
+paths:
+  /api/student/createStudent:
+    post:
+      summary: Enroll a new student (School Admin only)
+      tags: [Student]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, studentId, dateOfBirth, gender, parentContact]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                studentId:
+                  type: string
+                  description: Unique ID for the student within the school
+                dateOfBirth:
+                  type: string
+                  format: date
+                gender:
+                  type: string
+                  enum: [male, female, other]
+                address:
+                  type: string
+                classroomId:
+                  type: string
+                  description: Optional initial classroom assignment
+                parentContact:
+                  type: object
+                  required: [name, phone]
+                  properties:
+                    name:
+                      type: string
+                    phone:
+                      type: string
+                    email:
+                      type: string
+      responses:
+        200:
+          description: Student enrolled successfully
+        403:
+          description: Forbidden
+
+  /api/student/getStudents:
+    get:
+      summary: List all students (School Admin/Superadmin only)
+      tags: [Student]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+        - in: query
+          name: classroomId
+          schema:
+            type: string
+          description: Filter by classroom
+      responses:
+        200:
+          description: List of students
+        403:
+          description: Forbidden
+
+  /api/student/getStudent:
+    get:
+      summary: Get student details
+      tags: [Student]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Student profile details
+        404:
+          description: Student not found
+
+  /api/student/updateStudent:
+    patch:
+      summary: Update student profile
+      tags: [Student]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                dateOfBirth:
+                  type: string
+                  format: date
+                gender:
+                  type: string
+                  enum: [male, female, other]
+                address:
+                  type: string
+                parentContact:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    phone:
+                      type: string
+                    email:
+                      type: string
+      responses:
+        200:
+          description: Student profile updated successfully
+
+  /api/student/transferStudent:
+    patch:
+      summary: Transfer student to another classroom
+      tags: [Student]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [classroomId]
+              properties:
+                classroomId:
+                  type: string
+      responses:
+        200:
+          description: Student transferred successfully
+        400:
+          description: Invalid classroom
+
+  /api/student/deleteStudent:
+    delete:
+      summary: Delete a student record
+      tags: [Student]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Student record deleted successfully

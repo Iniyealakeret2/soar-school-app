@@ -65,11 +65,9 @@ module.exports = class TokenManager {
 
     /** generate shortId based on a longId */
     v1_createShortToken({__longToken, __device}){
-
-
         let decoded = __longToken;
         
-        let shortToken = this.genShortToken({
+        const token = this.genShortToken({
             userId: decoded.userId, 
             userKey: decoded.userKey,
             role: decoded.role,
@@ -78,7 +76,15 @@ module.exports = class TokenManager {
             deviceId: md5(JSON.stringify(__device)),
         });
 
-        return { shortToken };
+        const payload = jwt.decode(token);
+
+        return { 
+            accessToken: {
+                token: token,
+                expireAt: payload.exp * 1000,
+                createdAt: new Date(payload.iat * 1000)
+            }
+        };
     }
 
     async hashPassword(password) {

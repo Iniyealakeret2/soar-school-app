@@ -1,0 +1,132 @@
+paths:
+  /api/personnel/createPersonnel:
+    post:
+      summary: Create a new personnel member (School Admin only)
+      tags: [Personnel]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, role, employeeId]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [teacher, staff]
+                employeeId:
+                  type: string
+                department:
+                  type: string
+                designation:
+                  type: string
+      responses:
+        200:
+          description: Personnel created successfully
+        400:
+          description: Validation error or Email/Employee ID exists
+        403:
+          description: Forbidden
+
+  /api/personnel/getPersonnelList:
+    get:
+      summary: List all personnel (School Admin/Superadmin only)
+      tags: [Personnel]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+        - in: query
+          name: role
+          schema:
+            type: string
+            enum: [teacher, staff]
+          description: Filter by role
+      responses:
+        200:
+          description: List of personnel
+        403:
+          description: Forbidden
+
+  /api/personnel/getPersonnel:
+    get:
+      summary: Get personnel profile details
+      tags: [Personnel]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Personnel profile details
+        404:
+          description: Personnel not found
+
+  /api/personnel/updatePersonnel:
+    patch:
+      summary: Update personnel profile
+      tags: [Personnel]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                department:
+                  type: string
+                designation:
+                  type: string
+                status:
+                  type: string
+                  enum: [active, inactive, on_leave]
+      responses:
+        200:
+          description: Personnel updated successfully
+
+  /api/personnel/deletePersonnel:
+    delete:
+      summary: Delete a personnel record and their user account
+      tags: [Personnel]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Personnel and account deleted successfully

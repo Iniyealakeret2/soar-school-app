@@ -21,8 +21,8 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['superadmin', 'school_admin'],
-        default: 'school_admin'
+        enum: ['superadmin', 'school_admin', 'teacher', 'staff'],
+        default: 'staff'
     },
     schoolId: {
         type: mongoose.Schema.Types.ObjectId,

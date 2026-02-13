@@ -9,6 +9,7 @@ module.exports = class UserServer {
     constructor({config, managers}){
         this.config        = config;
         this.userApi       = managers.userApi;
+        this.app           = app;
     }
     
     /** for injecting middlewares */

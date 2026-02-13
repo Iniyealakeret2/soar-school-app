@@ -76,5 +76,17 @@ module.exports = {
             path: 'id',
             required: true,
         }
+    ],
+    changePassword: [
+        {
+            model: 'password',
+            path: 'oldPassword',
+            required: true,
+        },
+        {
+            model: 'password',
+            path: 'newPassword',
+            required: true,
+        }
     ]
 }
