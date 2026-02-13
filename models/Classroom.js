@@ -19,7 +19,7 @@ const classroomSchema = new mongoose.Schema({
     resources: [{
         name: { type: String, required: true },
         quantity: { type: Number, default: 1 },
-        status: { type: String, enum: ['active', 'broken', 'missing'], default: 'active' }
+        condition: { type: String, enum: ['good', 'damaged', 'maintenance', 'out_of_service'], default: 'good' }
     }],
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,

@@ -33,9 +33,9 @@ paths:
                         type: string
                       quantity:
                         type: integer
-                      status:
+                      condition:
                         type: string
-                        enum: [active, broken, missing]
+                        enum: [good, damaged, maintenance, out_of_service]
       responses:
         200:
           description: Classroom created successfully
@@ -152,9 +152,9 @@ paths:
                         type: string
                       quantity:
                         type: integer
-                      status:
+                      condition:
                         type: string
-                        enum: [active, broken, missing]
+                        enum: [active, damaged, maintenance]
       responses:
         200:
           description: Classroom updated successfully
