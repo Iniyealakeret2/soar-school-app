@@ -154,7 +154,7 @@ paths:
                         type: integer
                       condition:
                         type: string
-                        enum: [active, damaged, maintenance]
+                        enum: [good, damaged, maintenance, out_of_service]
       responses:
         200:
           description: Classroom updated successfully
@@ -178,3 +178,47 @@ paths:
           description: Classroom deleted successfully
         403:
           description: Forbidden
+
+  /api/classroom/addResources:
+    post:
+      summary: Add more resources to a classroom
+      tags: [Classroom]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the classroom to add resources to
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [resources]
+              properties:
+                resources:
+                  type: array
+                  items:
+                    type: object
+                    required: [name]
+                    properties:
+                      name:
+                        type: string
+                      quantity:
+                        type: integer
+                        default: 1
+                      condition:
+                        type: string
+                        enum: [good, damaged, maintenance, out_of_service]
+                        default: good
+      responses:
+        200:
+          description: Resources added successfully
+        403:
+          description: Forbidden
+        404:
+          description: Classroom not found

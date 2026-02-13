@@ -16,7 +16,8 @@ module.exports = class Classroom {
             'get=getClassrooms',
             'get=getClassroom',
             'patch=updateClassroom',
-            'delete=deleteClassroom'
+            'delete=deleteClassroom',
+            'post=addResources'
         ];
     }
 
@@ -243,6 +244,37 @@ module.exports = class Classroom {
 
         await ClassroomModel.findByIdAndDelete(id);
         return { message: 'Classroom deleted successfully' };
+    }
+
+    /**
+     * Add resources to an existing classroom.
+     */
+    async addResources({ __token, id, resources }) {
+        const classroom = await ClassroomModel.findById(id);
+        if (!classroom) return { error: 'Classroom not found' };
+
+        if (__token.role !== 'school_admin') {
+            return { error: 'Forbidden: Only school admins can add resources' };
+        }
+
+        if (String(__token.schoolId) !== String(classroom.schoolId)) {
+            return { error: 'Forbidden: You can only add resources to classrooms in your assigned school' };
+        }
+
+        const validationResult = await this.validators.classroom.addResources({ id, resources });
+        if (validationResult) return { error: validationResult };
+
+        const updatedClassroom = await ClassroomModel.findByIdAndUpdate(
+            id,
+            { $push: { resources: { $each: resources } } },
+            { new: true }
+        ).lean();
+
+        const { schoolId, ...rest } = updatedClassroom;
+        return { 
+            message: 'Resources added successfully',
+            classroom: { ...rest, school: schoolId } 
+        };
     }
 
 }
