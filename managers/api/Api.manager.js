@@ -113,8 +113,19 @@ module.exports = class ApiHandler {
             try {
                 result = await targetModule[`${fnName}`](data);
             } catch (err){
-                console.log(`error`, err);
-                result.error = `${fnName} failed to execute`;
+                if (err.name === 'CastError') {
+                    result.code = 400;
+                    result.error = `Invalid ID format for field ${err.path}`;
+                } else if (err.name === 'ValidationError') {
+                    result.code = 400;
+                    result.error = err.message;
+                } else if (err.code === 11000) {
+                    result.code = 409;
+                    result.error = `Duplicate key error: ${JSON.stringify(err.keyValue)} already exists.`;
+                } else {
+                    result.code = 500;
+                    result.error = `Internal Execution Error: ${err.message || 'Unknown error'}`;
+                }
             }
     
         if(cb)cb(result);
@@ -165,13 +176,26 @@ module.exports = class ApiHandler {
             if(result.selfHandleResponse){
                 // do nothing if response handeled
             } else {
-                
                 if(result.errors){
-                    return this.managers.responseDispatcher.dispatch(res, {ok: false, errors: result.errors});
+                    return this.managers.responseDispatcher.dispatch(res, {
+                        ok: false, 
+                        code: result.code || 400, 
+                        errors: result.errors
+                    });
                 } else if(result.error){
-                    return this.managers.responseDispatcher.dispatch(res, {ok: false, message: result.error});
+                    return this.managers.responseDispatcher.dispatch(res, {
+                        ok: false, 
+                        code: result.code || 400, 
+                        message: result.error
+                    });
                 } else {
-                    return this.managers.responseDispatcher.dispatch(res, {ok:true, data: result});
+                    const { message, ...data } = result;
+                    return this.managers.responseDispatcher.dispatch(res, {
+                        ok: true, 
+                        code: result.code || 200, 
+                        message: message || 'Success',
+                        data: data
+                    });
                 }
             }
         }});

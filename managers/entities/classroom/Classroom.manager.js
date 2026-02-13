@@ -16,7 +16,8 @@ module.exports = class Classroom {
             'get=getClassrooms',
             'get=getClassroom',
             'patch=updateClassroom',
-            'delete=deleteClassroom'
+            'delete=deleteClassroom',
+            'post=addResources'
         ];
     }
 
@@ -29,20 +30,20 @@ module.exports = class Classroom {
         const schoolAdminId = id;
         
         const validationResult = await this.validators.classroom.getClassrooms({ id });
-        if (validationResult) return { error: validationResult };
+        if (validationResult) return { errors: validationResult };
 
         let schoolId = null;
 
         if (__token.role === 'superadmin') {
-            if (!schoolAdminId) return { error: 'schoolAdminId is required for superadmins' };
+            if (!schoolAdminId) return { code: 400, error: 'schoolAdminId is required for superadmins' };
             const admin = await UserModel.findById(schoolAdminId);
-            if (!admin || admin.role !== 'school_admin') return { error: 'Invalid or missing school admin' };
+            if (!admin || admin.role !== 'school_admin') return { code: 400, error: 'Invalid or missing school admin' };
             schoolId = admin.schoolId;
         } else if (__token.role === 'school_admin') {
             schoolId = __token.schoolId;
         }
 
-        if (!schoolId) return { error: 'No school associated with this account or the specified admin' };
+        if (!schoolId) return { code: 403, error: 'No school associated with this account or the specified admin' };
 
         const skip = (page - 1) * limit;
         const query = { schoolId };
@@ -73,23 +74,20 @@ module.exports = class Classroom {
      * Create a new classroom.
      * School Admin can only create classrooms for their own school.
      */
-    async createClassroom({ __token, id, name, capacity, resources }) {
-        if (__token.role !== 'school_admin') {
-            return { error: 'Forbidden: Only school admins can create classrooms' };
-        }
+    async createClassroom({ __token, __isSchoolAdmin, id, name, capacity, resources }) {
 
         const schoolId = id;
 
         // Restriction: School Admin can only manage their own school
         if (String(__token.schoolId) !== String(schoolId)) {
-            return { error: 'Forbidden: You can only manage classrooms for your assigned school' };
+            return { code: 403, error: 'Forbidden: You can only manage classrooms for your assigned school' };
         }
 
         const validationResult = await this.validators.classroom.createClassroom({ id, name, capacity, resources });
-        if (validationResult) return { error: validationResult };
+        if (validationResult) return { errors: validationResult };
 
         const school = await SchoolModel.findById(schoolId);
-        if (!school) return { error: 'School not found' };
+        if (!school) return { code: 404, error: 'School not found' };
 
         try {
             const newClassroom = await ClassroomModel.create({
@@ -106,7 +104,7 @@ module.exports = class Classroom {
             };
         } catch (err) {
             if (err.code === 11000) {
-                return { error: 'A classroom with this name already exists in this school' };
+                return { code: 409, error: 'A classroom with this name already exists in this school' };
             }
             throw err;
         }
@@ -121,7 +119,7 @@ module.exports = class Classroom {
         const schoolId = id;
 
         const validationResult = await this.validators.classroom.getClassroomsBySchool({ id });
-        if (validationResult) return { error: validationResult };
+        if (validationResult) return { errors: validationResult };
 
         const isSuperAdmin = await this.shark.isGranted({
             layer: 'classroom',
@@ -138,13 +136,13 @@ module.exports = class Classroom {
         });
 
         if (!isSuperAdmin && !isSchoolAdmin) {
-            return { error: 'Forbidden' };
+            return { code: 403, error: 'Forbidden' };
         }
 
         // Restriction: School Admin can only see their own school's classrooms
         if (!isSuperAdmin && isSchoolAdmin) {
             if (String(__token.schoolId) !== String(schoolId)) {
-                return { error: 'Forbidden: You can only view classrooms for your assigned school' };
+                return { code: 403, error: 'Forbidden: You can only view classrooms for your assigned school' };
             }
         }
 
@@ -178,7 +176,7 @@ module.exports = class Classroom {
      */
     async getClassroom({ __token, id }) {
         const classroom = await ClassroomModel.findById(id).populate('schoolId', 'name').lean();
-        if (!classroom) return { error: 'Classroom not found' };
+        if (!classroom) return { code: 404, error: 'Classroom not found' };
 
         const isSuperAdmin = await this.shark.isGranted({
             layer: 'classroom',
@@ -191,7 +189,7 @@ module.exports = class Classroom {
         const isAuthorized = isSuperAdmin || (__token.role === 'school_admin' && __token.schoolId === classroom.schoolId._id.toString());
 
         if (!isAuthorized) {
-            return { error: 'Forbidden' };
+            return { code: 403, error: 'Forbidden' };
         }
 
         const { schoolId, ...rest } = classroom;
@@ -201,20 +199,16 @@ module.exports = class Classroom {
     /**
      * Update a classroom.
      */
-    async updateClassroom({ __token, id, ...updateData }) {
+    async updateClassroom({ __token, __isSchoolAdmin, id, ...updateData }) {
         const classroom = await ClassroomModel.findById(id);
-        if (!classroom) return { error: 'Classroom not found' };
-
-        if (__token.role !== 'school_admin') {
-            return { error: 'Forbidden: Only school admins can update classrooms' };
-        }
+        if (!classroom) return { code: 404, error: 'Classroom not found' };
 
         if (String(__token.schoolId) !== String(classroom.schoolId)) {
-            return { error: 'Forbidden: You can only update classrooms for your assigned school' };
+            return { code: 403, error: 'Forbidden: You can only update classrooms for your assigned school' };
         }
 
         const validationResult = await this.validators.classroom.updateClassroom({ id, ...updateData });
-        if (validationResult) return { error: validationResult };
+        if (validationResult) return { errors: validationResult };
 
         const { fnName, moduleName, __token: _t, __device: _d, ...cleanUpdateData } = updateData;
 
@@ -227,18 +221,41 @@ module.exports = class Classroom {
     }
 
     /**
-     * Delete a classroom.
+     * Append new resources to a classroom's inventory.
      */
-    async deleteClassroom({ __token, id }) {
+    async addResources({ __token, __isSchoolAdmin, id, resources }) {
         const classroom = await ClassroomModel.findById(id);
-        if (!classroom) return { error: 'Classroom not found' };
-
-        if (__token.role !== 'school_admin') {
-            return { error: 'Forbidden: Only school admins can delete classrooms' };
-        }
+        if (!classroom) return { code: 404, error: 'Classroom not found' };
 
         if (String(__token.schoolId) !== String(classroom.schoolId)) {
-            return { error: 'Forbidden: You can only delete classrooms for your assigned school' };
+            return { code: 403, error: 'Forbidden: You can only add resources to classrooms in your assigned school' };
+        }
+
+        const validationResult = await this.validators.classroom.addResources({ id, resources });
+        if (validationResult) return { errors: validationResult };
+
+        const updatedClassroom = await ClassroomModel.findByIdAndUpdate(
+            id,
+            { $push: { resources: { $each: resources } } },
+            { new: true }
+        ).lean();
+
+        const { schoolId, ...rest } = updatedClassroom;
+        return { 
+            message: 'Resources added successfully',
+            classroom: { ...rest, school: schoolId } 
+        };
+    }
+
+    /**
+     * Delete a classroom.
+     */
+    async deleteClassroom({ __token, __isSchoolAdmin, id }) {
+        const classroom = await ClassroomModel.findById(id);
+        if (!classroom) return { code: 404, error: 'Classroom not found' };
+
+        if (String(__token.schoolId) !== String(classroom.schoolId)) {
+            return { code: 403, error: 'Forbidden: You can only delete classrooms for your assigned school' };
         }
 
         await ClassroomModel.findByIdAndDelete(id);

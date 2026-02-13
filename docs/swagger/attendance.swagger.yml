@@ -1,0 +1,108 @@
+paths:
+  /api/attendance/markAttendance:
+    post:
+      summary: Mark attendance for a student
+      tags:
+        - Attendance
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - studentId
+                - classroomId
+                - date
+                - status
+              properties:
+                studentId:
+                  type: string
+                classroomId:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                status:
+                  type: string
+                  enum: [present, absent, late, excused]
+                remarks:
+                  type: string
+      responses:
+        200:
+          description: Attendance marked successfully
+        400:
+          description: Invalid input
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+
+  /api/attendance/getAttendanceReport:
+    get:
+      summary: Get attendance report
+      tags:
+        - Attendance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: classroomId
+          schema:
+            type: string
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: studentId
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        200:
+          description: Attendance report fetched successfully
+
+  /api/attendance/getStudentAttendance:
+    get:
+      summary: Get attendance for a specific student
+      tags:
+        - Attendance
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: studentId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        200:
+          description: Student attendance fetched successfully

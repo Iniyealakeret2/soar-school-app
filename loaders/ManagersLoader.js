@@ -15,6 +15,10 @@ const TimeMachine           = require('../managers/time_machine/TimeMachine.mana
 const UserManager           = require('../managers/entities/user/User.manager.js');
 const SchoolManager         = require('../managers/entities/school/School.manager.js');
 const ClassroomManager      = require('../managers/entities/classroom/Classroom.manager.js');
+const StudentManager        = require('../managers/entities/student/Student.manager.js');
+const PersonnelManager      = require('../managers/entities/personnel/Personnel.manager.js');
+const AttendanceManager     = require('../managers/entities/attendance/Attendance.manager.js');
+const ScheduleManager       = require('../managers/entities/schedule/Schedule.manager.js');
 
 /** 
  * load sharable modules
@@ -72,8 +76,12 @@ module.exports = class ManagersLoader {
         this.managers.user                = new UserManager(this.injectable);
         this.managers.school              = new SchoolManager(this.injectable);
         this.managers.classroom           = new ClassroomManager(this.injectable);
+        this.managers.student             = new StudentManager(this.injectable);
+        this.managers.personnel           = new PersonnelManager(this.injectable);
+        this.managers.attendance          = new AttendanceManager(this.injectable);
+        this.managers.schedule            = new ScheduleManager(this.injectable);
         /*************************************************************************************************/
-        this.managers.mwsExec             = new VirtualStack({ ...{ preStack: [/* '__token', */'__device',] }, ...this.injectable });
+        this.managers.mwsExec             = new VirtualStack({ ...{ preStack: ['__rateLimit', '__device',] }, ...this.injectable });
         this.managers.userApi             = new ApiHandler({...this.injectable,...{prop:'httpExposed'}});
         this.managers.userServer          = new UserServer({ config: this.config, managers: this.managers });
 

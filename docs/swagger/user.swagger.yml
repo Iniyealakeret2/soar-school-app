@@ -123,3 +123,29 @@ paths:
           description: Admin deleted successfully
         403:
           description: Forbidden
+
+  /api/user/changePassword:
+    post:
+      summary: Change own password
+      tags: [User]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [oldPassword, newPassword]
+              properties:
+                oldPassword:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        200:
+          description: Password updated successfully
+        400:
+          description: Validation error or incorrect old password
+        401:
+          description: Unauthorized

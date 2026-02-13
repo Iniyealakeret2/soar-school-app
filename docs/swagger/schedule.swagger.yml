@@ -1,0 +1,75 @@
+paths:
+  /api/schedule/createSchedule:
+    post:
+      summary: Create a new schedule entry
+      tags:
+        - Schedule
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - classroomId
+                - teacherId
+                - subject
+                - dayOfWeek
+                - startTime
+                - endTime
+              properties:
+                classroomId:
+                  type: string
+                teacherId:
+                  type: string
+                subject:
+                  type: string
+                dayOfWeek:
+                  type: integer
+                  minimum: 0
+                  maximum: 6
+                startTime:
+                  type: string
+                  example: "09:00"
+                endTime:
+                  type: string
+                  example: "10:30"
+      responses:
+        200:
+          description: Schedule created successfully
+        409:
+          description: Schedule overlap
+
+  /api/schedule/getSchedules:
+    get:
+      summary: Get all schedules
+      tags:
+        - Schedule
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: classroomId
+          schema:
+            type: string
+      responses:
+        200:
+          description: Schedules fetched successfully
+
+  /api/schedule/getTeacherSchedule:
+    get:
+      summary: Get personal schedule for a teacher
+      tags:
+        - Schedule
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: teacherId
+          schema:
+            type: string
+      responses:
+        200:
+          description: Teacher schedule fetched successfully
