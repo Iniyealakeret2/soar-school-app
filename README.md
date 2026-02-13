@@ -64,7 +64,7 @@ The project follows a modular "Manager-Loader" pattern for high scalability and 
    NACL_SECRET=your_nacl_secret
    ```
 
-> **Note**: `ADMIN_SIGNUP_KEY` is the secret key (e.g., `soar_secure_key`) required in the request body as `adminKey` when signing up for `superadmin` or `school_admin` roles.
+> **Note**: `ADMIN_SIGNUP_KEY` is the secret key required in the request body as `adminKey` when signing up for `superadmin` or `school_admin` roles. New administrative accounts can be created via the `/api/user/signup` endpoint by providing the `ADMIN_SIGNUP_KEY` defined in the server environment.
 
 ### 🐳 Docker Compose Setup
 
