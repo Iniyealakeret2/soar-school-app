@@ -67,7 +67,6 @@ describe('Personnel Integration Tests', () => {
                     email: 'john@teacher.com',
                     password: 'password123',
                     role: 'teacher',
-                    employeeId: 'EMP001',
                     department: 'Science',
                     designation: 'Senior Teacher'
                 });
@@ -75,7 +74,7 @@ describe('Personnel Integration Tests', () => {
             if (res.status !== 200) console.log('Create Teacher Failed:', JSON.stringify(res.body));
 
             expect(res.status).toBe(200);
-            expect(res.body.data.personnel.employeeId).toBe('EMP001');
+            expect(res.body.data.personnel._id || res.body.data.personnel.id).toBeDefined();
             expect(res.body.data.personnel.user.name).toBe('John Teacher');
             expect(res.body.data.personnel.user.role).toBe('teacher');
         });
@@ -88,7 +87,6 @@ describe('Personnel Integration Tests', () => {
                     email: 'jane@staff.com',
                     password: 'password123',
                     role: 'staff',
-                    employeeId: 'EMP002',
                     department: 'Admin',
                     designation: 'Clerk'
                 });
@@ -105,7 +103,6 @@ describe('Personnel Integration Tests', () => {
                     email: 'inv@alid.com',
                     password: 'password123',
                     role: 'student', // Invalid for personnel
-                    employeeId: 'EMP003'
                 });
 
             if(res.status !== 400 && res.status !== 422) console.log('Invalid Role Failed:', JSON.stringify(res.body));
@@ -123,7 +120,6 @@ describe('Personnel Integration Tests', () => {
                     email: 'exist@test.com',
                     password: 'password123',
                     role: 'teacher',
-                    employeeId: 'EMP004'
                 });
             
             // Try creating again
@@ -134,7 +130,6 @@ describe('Personnel Integration Tests', () => {
                     email: 'exist@test.com',
                     password: 'password123',
                     role: 'staff',
-                    employeeId: 'EMP005'
                 });
 
             if(res.status !== 409) console.log('Duplicate Email Failed:', JSON.stringify(res.body));
@@ -143,34 +138,6 @@ describe('Personnel Integration Tests', () => {
             expect(res.body.error || res.body.message).toBe('Email already registered');
         });
 
-        test('Should fail if employee ID already exists within the same school', async () => {
-             // Create personnel first
-             await request(app).post('/api/personnel/createPersonnel')
-             .set('token', schoolAdminToken)
-             .send({
-                 name: 'Emp One',
-                 email: 'emp1@test.com',
-                 password: 'password123',
-                 role: 'teacher',
-                 employeeId: 'DUPLICATE_ID'
-             });
-         
-            // Try creating again with same ID
-            const res = await request(app).post('/api/personnel/createPersonnel')
-                .set('token', schoolAdminToken)
-                .send({
-                    name: 'Emp Two',
-                    email: 'emp2@test.com',
-                    password: 'password123',
-                    role: 'staff',
-                    employeeId: 'DUPLICATE_ID'
-                });
-
-            if(res.status !== 409) console.log('Duplicate EmployeeID Failed:', JSON.stringify(res.body));
-
-            expect(res.status).toBe(409);
-            expect(res.body.error || res.body.message).toBe('Employee ID already exists in this school');
-        });
     });
 
     /**
@@ -180,17 +147,17 @@ describe('Personnel Integration Tests', () => {
         beforeEach(async () => {
             // Seed multiple personnel with valid lengths
             const r1 = await request(app).post('/api/personnel/createPersonnel').set('token', schoolAdminToken).send({
-                name: 'Teacher One', email: 't1@sc.com', password: 'password123', role: 'teacher', employeeId: 'TEACHER1'
+                name: 'Teacher One', email: 't1@sc.com', password: 'password123', role: 'teacher'
             });
             if(r1.status !== 200) console.log('Seed T1 Failed:', JSON.stringify(r1.body));
 
             const r2 = await request(app).post('/api/personnel/createPersonnel').set('token', schoolAdminToken).send({
-                name: 'Teacher Two', email: 't2@sc.com', password: 'password123', role: 'teacher', employeeId: 'TEACHER2'
+                name: 'Teacher Two', email: 't2@sc.com', password: 'password123', role: 'teacher'
             });
             if(r2.status !== 200) console.log('Seed T2 Failed:', JSON.stringify(r2.body));
 
             const r3 = await request(app).post('/api/personnel/createPersonnel').set('token', schoolAdminToken).send({
-                name: 'Staff One', email: 's1@sc.com', password: 'password123', role: 'staff', employeeId: 'STAFF1'
+                name: 'Staff One', email: 's1@sc.com', password: 'password123', role: 'staff'
             });
             if(r3.status !== 200) console.log('Seed S1 Failed:', JSON.stringify(r3.body));
         });
@@ -234,7 +201,6 @@ describe('Personnel Integration Tests', () => {
                     email: 'update@test.com',
                     password: 'password123',
                     role: 'teacher',
-                    employeeId: 'UPD001',
                     department: 'Old Dept'
                 });
             if(createRes.status !== 200) console.log('Setup Update Failed:', JSON.stringify(createRes.body));

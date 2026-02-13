@@ -22,10 +22,10 @@ module.exports = class Personnel {
     /**
      * Create a new personnel member (User account + Profile).
      */
-    async createPersonnel({ __token, __isSchoolAdmin, name, email, password, role, employeeId, department, designation }) {
+    async createPersonnel({ __token, __isSchoolAdmin, name, email, password, role, department, designation }) {
 
         const validationResult = await this.validators.personnel.createPersonnel({ 
-            name, email, password, role, employeeId, department, designation 
+            name, email, password, role, department, designation 
         });
         if (validationResult) return { errors: validationResult };
 
@@ -37,10 +37,6 @@ module.exports = class Personnel {
         // Check if user exists
         const existingUser = await UserModel.findOne({ email });
         if (existingUser) return { code: 409, error: 'Email already registered' };
-
-        // Check if employeeId exists for this school
-        const existingPersonnel = await PersonnelModel.findOne({ schoolId: __token.schoolId, employeeId });
-        if (existingPersonnel) return { code: 409, error: 'Employee ID already exists in this school' };
 
         // 1. Create User
         const hashedPassword = await this.tokenManager.hashPassword(password);
@@ -56,7 +52,6 @@ module.exports = class Personnel {
         const personnel = await PersonnelModel.create({
             userId: user._id,
             schoolId: __token.schoolId,
-            employeeId,
             department,
             designation
         });
@@ -94,6 +89,7 @@ module.exports = class Personnel {
         const total = await PersonnelModel.countDocuments(query);
         const personnelList = await PersonnelModel.find(query)
             .populate('userId', 'name email role')
+            .populate('schoolId', 'name address schoolOwner')
             .skip(skip)
             .limit(limitInt)
             .lean();

@@ -170,6 +170,29 @@ describe('School & Classroom Integration Tests', () => {
 
            expect(res.status).toBe(200);
            expect(res.body.message).toBe('Classroom deleted successfully');
-       });
+        });
+
+        test('Should add resources to classroom', async () => {
+            const createRes = await request(app).post('/api/classroom/createClassroom')
+               .set('token', schoolAdminToken)
+               .query({ id: schoolId })
+               .send({ name: 'Class For Resources', capacity: 20 });
+            
+            const cId = createRes.body.data.classroom._id || createRes.body.data.classroom.id;
+
+            const res = await request(app).post('/api/classroom/addResources')
+                .set('token', schoolAdminToken)
+                .send({
+                    id: cId,
+                    resources: [
+                        { name: 'Projector', quantity: 1, condition: 'active' },
+                        { name: 'Whiteboard', quantity: 2, condition: 'broken' }
+                    ]
+                });
+
+            expect(res.status).toBe(200);
+            expect(res.body.data.classroom.resources.length).toBe(2);
+            expect(res.body.data.classroom.resources[1].condition).toBe('broken');
+        });
     });
 });
